@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>芙宁娜的告白</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 微软雅黑, sans-serif; }
+        body { 
+            background: #fce4ec; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+        .img-box {
+            width: 240px; 
+            height: 240px; 
+            border-radius: 50%; 
+            overflow: hidden; 
+            border: 8px solid #fff; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.1); 
+            margin-bottom: 40px; 
+            background: #f8f8f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .img-box img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transition: opacity 0.3s ease;
+        }
+        .load-tip {
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .title { 
+            font-size: 32px; 
+            color: #333; 
+            font-weight: bold; 
+            margin-bottom: 40px; 
+            text-align: center; 
+        }
+        .btn-group { 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+        }
+        .btn { 
+            padding: 16px 36px; 
+            border: none; 
+            border-radius: 50px; 
+            font-size: 22px; 
+            color: #fff; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            min-width: 120px; 
+        }
+        #refuseBtn { background-color: #4299e1; }
+        #agreeBtn { background-color: #ed64a6; }
+        #refuseBtn:disabled { 
+            background-color: #b3d4fc; 
+            cursor: not-allowed; 
+            opacity: 0.8; 
+        }
+        .btn:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <div class="img-box">
+        <div class="load-tip" id="loadTip">图片加载中...</div>
+        <img src="" id="fnImg" alt="芙宁娜" style="opacity: 0; display: none;">
+    </div>
+    <h1 class="title" id="mainTitle">可以成为我的恋人吗？</h1>
+    <div class="btn-group">
+        <button class="btn" id="refuseBtn">拒绝</button>
+        <button class="btn" id="agreeBtn">同意</button>
+    </div>
+
+    <script>
+        // 按「初始期待→委屈→伤心→大哭→超伤心→开心」重新排序你的图床链接
+        const fnImgUrls = [
+            "https://img.baidu.re/i/2025/12/12v510m.jpg",  // 初始期待（第一张）
+            "https://img.baidu.re/i/2025/12/12v5gfe.jpg",  // 委屈（拒绝1次）
+            "https://img.baidu.re/i/2025/12/12v5xig.jpg",  // 伤心（拒绝2次）
+            "https://img.baidu.re/i/2025/12/12v66q3.jpg",  // 大哭（拒绝3次）
+            "https://img.baidu.re/i/2025/12/12v6jih.jpg",  // 超伤心（拒绝4次）
+            "https://img.baidu.re/i/2025/12/12v6vn4.jpg"   // 开心（同意后）
+        ];
+        const refuseTextList = ["你是认真的吗？", "要不再想想？", "不许选这个！", "我会伤心的~"];
+        
+        const fnImg = document.getElementById("fnImg");
+        const loadTip = document.getElementById("loadTip");
+        const mainTitle = document.getElementById("mainTitle");
+        const refuseBtn = document.getElementById("refuseBtn");
+        const agreeBtn = document.getElementById("agreeBtn");
+        
+        let clickCount = 0;
+        let isImgLoaded = false;
+
+        // 预加载第一张图片
+        function preloadFirstImg() {
+            const img = new Image();
+            img.src = fnImgUrls[0];
+            img.onload = function() {
+                fnImg.src = fnImgUrls[0];
+                fnImg.style.display = "block";
+                setTimeout(() => { fnImg.style.opacity = 1; }, 100);
+                loadTip.style.display = "none";
+                isImgLoaded = true;
+            };
+            img.onerror = function() {
+                loadTip.textContent = "图片加载失败，检查链接是否有效";
+                isImgLoaded = false;
+            };
+        }
+
+        // 拒绝按钮逻辑（按新顺序切换图片）
+        refuseBtn.addEventListener("click", function() {
+            if (!isImgLoaded || clickCount >= 4) return;
+            fnImg.src = fnImgUrls[clickCount + 1];
+            refuseBtn.textContent = refuseTextList[clickCount];
+            clickCount++;
+            if (clickCount === 4) refuseBtn.disabled = true;
+        });
+
+        // 同意按钮逻辑（显示最终开心图）
+        agreeBtn.addEventListener("click", function() {
+            if (!isImgLoaded) return;
+            fnImg.src = fnImgUrls[5];
+            mainTitle.textContent = "我也喜欢你呀！";
+            document.querySelector(".btn-group").style.display = "none";
+        });
+
+        // 页面加载完成后预加载图片
+        window.onload = preloadFirstImg;
+    </script>
+</body>
+</html>
